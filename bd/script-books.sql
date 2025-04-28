@@ -42,5 +42,7 @@ UPDATE books SET title = "DORAEMON Nº 01/15" WHERE id = 6;
 
 UPDATE books SET title = "PEQUEÑO SHERLOCK: EL CASO DEL TIRANOSAURIO REX" WHERE id = 4;
 
+DELETE FROM books WHERE id = 6; 
+
 
 

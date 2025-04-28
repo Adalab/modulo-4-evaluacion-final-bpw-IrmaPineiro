@@ -58,7 +58,6 @@ app.post("/api/book", async (req, res) => {
 });
 
 //Actualizar una entrada existente:
-
 app.put("/api/book/:id", async (req, res) => {
     const connection = await getConnection();
     const { id } = req.params;
@@ -73,6 +72,22 @@ app.put("/api/book/:id", async (req, res) => {
         id: bookResultsUpdate.insertId
     });
 
+});
+
+
+//Eliminar una entrada existente:
+app.delete("/api/book/:id", async (req, res) => {
+    const connection = await getConnection();
+    const { id } = req.params;
+    const sqlQuery = "DELETE FROM books WHERE id = ?";
+    const [bookResultsDelete] = await connection.query(sqlQuery, [id]);
+    console.log(bookResultsDelete);
+
+    connection.end();
+    res.status(200).json({
+        status: "success",
+        message: "Remove resorce"
+    });
 
 });
 
