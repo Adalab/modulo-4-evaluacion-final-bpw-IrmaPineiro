@@ -228,11 +228,18 @@ app.post("/api/login", async (req, res) => {
     try {
         connection = await getConnection();
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+        }
+        //Buscar el usuario por email:
         const sqlQuery = "SELECT * FROM users WHERE email = ?";
         const [resultUser] = await connection.query(sqlQuery, [email]);
         console.log(resultUser);
 
-        //Verificar si el usuario existe:   
         if (resultUser.length > 0) {
             //Comprobar si la contraseña:
             const isSamePassword = await bcrypt.compare(password, resultUser[0].password);
@@ -242,7 +249,6 @@ app.post("/api/login", async (req, res) => {
                 const infoToken = {
                     id: resultUser[0].id,
                     email: resultUser[0].email,
-                    userName: resultUser[0].userName
 
                 }
                 const token = jwt.sign(infoToken, process.env.MY_SECRET_TOKEN, { expiresIn: "1h" });
@@ -293,6 +299,6 @@ app.post("/api/login", async (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
-    console.log("Clave JWT cargada:", process.env.MY_SECRET_TOKEN);
+
 });
 
