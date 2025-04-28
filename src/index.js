@@ -21,15 +21,43 @@ async function getConnection() {
 }
 
 //Endpoints:
+//Leer/listar todas las entradas existentes:
 app.get("/api/books", async (req, res) => {
     const connection = await getConnection();
     const sqlQuery = "SELECT * FROM books";
     const [bookResults] = await connection.query(sqlQuery);
-    console.log(bookResults);
-    res.json({});
+    //console.log(bookResults);
 
     connection.end();
+
+    res.status(200).json({
+        info: {
+            count: bookResults.length
+        },
+        results: bookResults
+    });
+
 });
+
+//Insertar una entrada:
+app.post("/api/book", async (req, res) => {
+    const connection = await getConnection();
+    const { title, author, year, publisher, pages, genre } = req.body;
+    //console.log(req.body);
+
+    const sqlQuery = "INSERT INTO books (title, author, year, publisher, pages, genre) VALUES (?, ?, ?, ?, ?, ?)";
+    const [bookResultsInsert] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre]);
+    //console.log(bookResultsInsert);
+
+    connection.end();
+    res.status(201).json({
+        success: true,
+        message: "Book added successfully"
+    });
+
+});
+
+
 
 
 
