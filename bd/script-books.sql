@@ -44,7 +44,14 @@ UPDATE books SET title = "PEQUEÑO SHERLOCK: EL CASO DEL TIRANOSAURIO REX" WHERE
 
 DELETE FROM books WHERE id = 6; 
 
-SELECT * FROM books WHERE id = 11
+SELECT * FROM books WHERE id = 11;
+
+SELECT * FROM books WHERE id = 11;
+
+INSERT INTO users (userName, email, password)
+VALUES ("susana", "susana@gmail.com", "1234");
+
+SELECT * FROM users WHERE email = "susana@gmail.com";
         
 
 

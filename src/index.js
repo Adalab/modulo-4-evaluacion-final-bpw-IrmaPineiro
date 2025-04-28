@@ -3,11 +3,14 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 dotenv.config();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+const MY_SECRET_TOKEN = "secretToken";
 
 
 // función para realizar conexión para conectarte con la base de datos MySQL:
@@ -136,7 +139,7 @@ app.put("/api/book/:id", async (req, res) => {
 });
 
 
-//Eliminar una entrada existente:
+//Eliminar una entrada de libro existente:
 app.delete("/api/book/:id", async (req, res) => {
     let connection;
     try {
@@ -174,6 +177,86 @@ app.delete("/api/book/:id", async (req, res) => {
             await connection.end();
     }
 });
+
+
+
+//Endpoint para registro de usuario:
+app.post("/api/register", async (req, res) => {
+    const connection = await getConnection();
+    const { userName, email, password } = req.body;
+    console.log(email, userName, password);
+
+    //Encriptar la contraseña:
+    const hashed_password = await bcrypt.hash(password, 10);
+
+
+    const sqlQuery = "INSERT INTO users (userName, email, password) VALUES (?, ?, ?)";
+    const [userResults] = await connection.query(sqlQuery, [userName, email, hashed_password]);
+    console.log(userResults);
+    connection.end();
+
+    res.status(201).json({
+        success: true,
+        message: `Register completed. Id user: ${userResults.insertId}`,
+    });
+
+
+
+});
+
+//Endpoint para iniciar sesión:
+app.post("/api/login", async (req, res) => {
+    const connection = await getConnection();
+    const { email, password } = req.body;
+    const sqlQuery = "SELECT * FROM users WHERE email = ?";
+    const [resultUser] = await connection.query(sqlQuery, [email]);
+    console.log(resultUser);
+
+    //Verificar si el usuario existe:   
+    if (resultUser.length > 0) {
+        //Comprobar si la contraseña:
+        const isSamePassword = await bcrypt.compare(password, resultUser[0].password);
+        console.log(isSamePassword);
+
+        if (isSamePassword) {
+            const infoToken = {
+                id: resultUser[0].id,
+                email: resultUser[0].email,
+                userName: resultUser[0].userName
+
+            }
+            const token = jwt.sign(infoToken, MY_SECRET_TOKEN, { expiresIn: "1h" });
+            console.log(token);
+            res.status(200).json({
+                success: true,
+                message: "Login successful",
+                token: token,
+                userId: resultUser[0].id
+            });
+
+        } else {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid password"
+            });
+        }
+    } else {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
+    }
+    connection.end();
+
+});
+
+
+
+
+
+
+
+
 
 
 
