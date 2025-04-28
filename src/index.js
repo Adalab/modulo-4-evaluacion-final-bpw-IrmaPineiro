@@ -182,83 +182,107 @@ app.delete("/api/book/:id", async (req, res) => {
 
 //Endpoint para registro de usuario:
 app.post("/api/register", async (req, res) => {
-    const connection = await getConnection();
-    const { userName, email, password } = req.body;
-    console.log(email, userName, password);
+    let connection;
+    try {
+        connection = await getConnection();
+        const { userName, email, password } = req.body;
+        //console.log(email, userName, password);
 
-    //Encriptar la contraseña:
-    const hashed_password = await bcrypt.hash(password, 10);
+        if (!userName || !email || !password) {
+            return res.status(400).json({
+                status: "error",
+                message: "Please fill all fields"
+            })
+        }
 
+        const hashed_password = await bcrypt.hash(password, 10);
 
-    const sqlQuery = "INSERT INTO users (userName, email, password) VALUES (?, ?, ?)";
-    const [userResults] = await connection.query(sqlQuery, [userName, email, hashed_password]);
-    console.log(userResults);
-    connection.end();
+        const sqlQuery = "INSERT INTO users (userName, email, password) VALUES (?, ?, ?)";
+        const [userResults] = await connection.query(sqlQuery, [userName, email, hashed_password]);
+        //console.log(userResults);
 
-    res.status(201).json({
-        success: true,
-        message: `Register completed. Id user: ${userResults.insertId}`,
-    });
+        res.status(201).json({
+            success: true,
+            message: `Register completed. Id user: ${userResults.insertId}`,
+        });
 
+    } catch (error) {
+        console.error("Error registering user", error);
+        return res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
+        });
 
+    } finally {
+        if (connection)
+            await connection.end();
+    }
 
 });
+
 
 //Endpoint para iniciar sesión:
 app.post("/api/login", async (req, res) => {
-    const connection = await getConnection();
-    const { email, password } = req.body;
-    const sqlQuery = "SELECT * FROM users WHERE email = ?";
-    const [resultUser] = await connection.query(sqlQuery, [email]);
-    console.log(resultUser);
+    let connection;
+    try {
+        connection = await getConnection();
+        const { email, password } = req.body;
+        const sqlQuery = "SELECT * FROM users WHERE email = ?";
+        const [resultUser] = await connection.query(sqlQuery, [email]);
+        console.log(resultUser);
 
-    //Verificar si el usuario existe:   
-    if (resultUser.length > 0) {
-        //Comprobar si la contraseña:
-        const isSamePassword = await bcrypt.compare(password, resultUser[0].password);
-        console.log(isSamePassword);
+        //Verificar si el usuario existe:   
+        if (resultUser.length > 0) {
+            //Comprobar si la contraseña:
+            const isSamePassword = await bcrypt.compare(password, resultUser[0].password);
+            console.log(isSamePassword);
 
-        if (isSamePassword) {
-            const infoToken = {
-                id: resultUser[0].id,
-                email: resultUser[0].email,
-                userName: resultUser[0].userName
+            if (isSamePassword) {
+                const infoToken = {
+                    id: resultUser[0].id,
+                    email: resultUser[0].email,
+                    userName: resultUser[0].userName
 
+                }
+                const token = jwt.sign(infoToken, process.env.MY_SECRET_TOKEN, { expiresIn: "1h" });
+                //console.log(token);
+
+                res.status(200).json({
+                    success: true,
+                    message: "Login successful",
+                    token: token,
+                    userId: resultUser[0].id
+                });
+
+            } else {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid password"
+                });
             }
-            const token = jwt.sign(infoToken, MY_SECRET_TOKEN, { expiresIn: "1h" });
-            console.log(token);
-            res.status(200).json({
-                success: true,
-                message: "Login successful",
-                token: token,
-                userId: resultUser[0].id
-            });
-
         } else {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: "Invalid password"
+                message: "User not found"
             });
         }
-    } else {
-        return res.status(404).json({
-            success: false,
-            message: "User not found"
+
+
+    } catch (error) {
+        console.error("Error logging in", error);
+        return res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
         });
+    } finally {
+        if (connection)
+            await connection.end();
     }
-    connection.end();
+
 
 });
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -269,5 +293,6 @@ app.post("/api/login", async (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
+    console.log("Clave JWT cargada:", process.env.MY_SECRET_TOKEN);
 });
 
