@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -14,7 +16,7 @@ async function getConnection() {
         host: 'localhost',
         database: 'library_db',
         user: 'root',
-        password: 'irmitate',
+        password: process.env.DB_PASSWORD,
     });
     await connection.connect();
     return connection;
@@ -181,7 +183,7 @@ app.delete("/api/book/:id", async (req, res) => {
 
 
 //Establecer el puerto de conexión:
-const port = 5000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
 });
