@@ -41,21 +41,39 @@ app.get("/api/books", async (req, res) => {
 
 //Insertar una entrada:
 app.post("/api/book", async (req, res) => {
-    const connection = await getConnection();
-    const { title, author, year, publisher, pages, genre } = req.body;
-    //console.log(req.body);
+    try {
+        const connection = await getConnection();
+        const { title, author, year, publisher, pages, genre } = req.body;
 
-    const sqlQuery = "INSERT INTO books (title, author, year, publisher, pages, genre) VALUES (?, ?, ?, ?, ?, ?)";
-    const [bookResultsInsert] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre]);
-    //console.log(bookResultsInsert);
+        if (!title || !author || !year || !publisher || !pages || !genre) {
+            return res.status(400).json({
+                status: "error",
+                message: "Please fill all fields"
+            })
+        } else {
+            const sqlQuery = "INSERT INTO books (title, author, year, publisher, pages, genre) VALUES (?, ?, ?, ?, ?, ?)";
+            const [bookResultsInsert] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre]);
 
-    connection.end();
-    res.status(201).json({
-        success: true,
-        message: "Book added successfully"
-    });
+            await connection.end();
 
+            return res.status(201).json({
+                success: true,
+                message: "Book added successfully",
+                bookId: bookResultsInsert.insertId
+            });
+        }
+
+
+    } catch (error) {
+        console.log("Error inserting book", error);
+        return res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
+        });
+    }
 });
+
 
 //Actualizar una entrada existente:
 app.put("/api/book/:id", async (req, res) => {
