@@ -41,8 +41,9 @@ app.get("/api/books", async (req, res) => {
 
 //Insertar una entrada:
 app.post("/api/book", async (req, res) => {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const { title, author, year, publisher, pages, genre } = req.body;
 
         if (!title || !author || !year || !publisher || !pages || !genre) {
@@ -50,36 +51,37 @@ app.post("/api/book", async (req, res) => {
                 status: "error",
                 message: "Please fill all fields"
             })
-        } else {
-            const sqlQuery = "INSERT INTO books (title, author, year, publisher, pages, genre) VALUES (?, ?, ?, ?, ?, ?)";
-            const [bookResultsInsert] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre]);
-
-            await connection.end();
-
-            return res.status(201).json({
-                success: true,
-                message: "Book added successfully",
-                bookId: bookResultsInsert.insertId
-            });
         }
+        const sqlQuery = "INSERT INTO books (title, author, year, publisher, pages, genre) VALUES (?, ?, ?, ?, ?, ?)";
+        const [bookResultsInsert] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre]);
+        return res.status(201).json({
+            success: true,
+            message: "Book added successfully",
+            bookId: bookResultsInsert.insertId
+        });
+
 
 
     } catch (error) {
-        console.log("Error inserting book", error);
+        console.error("Error inserting book", error);
         return res.status(500).json({
             status: "error",
             message: "Internal error. Contact support",
             error: error.message
         });
     }
+    finally {
+        if (connection)
+            await connection.end();
+    }
 });
 
 
 //Actualizar una entrada existente:
 app.put("/api/book/:id", async (req, res) => {
-
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const { id } = req.params;
         const { title, author, year, publisher, pages, genre } = req.body;
 
@@ -95,36 +97,38 @@ app.put("/api/book/:id", async (req, res) => {
                 status: "error",
                 message: "Please fill all fields"
             });
-
-        } else {
-            const [bookExists] = await connection.query("SELECT * FROM books WHERE id = ?", [id]);
-            if (bookExists.length === 0) {
-                return res.status(404).json({
-                    status: "error",
-                    message: "Book not found"
-                });
-            }
         }
+
+        const [bookExists] = await connection.query("SELECT * FROM books WHERE id = ?", [id]);
+        if (bookExists.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "Book not found"
+            });
+        }
+
 
         const sqlQuery = "UPDATE books SET title = ?, author = ?, year = ?, publisher = ?, pages = ?, genre = ? WHERE id = ?";
         const [bookResultsUpdate] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre, id]);
-        console.log(bookResultsUpdate);
-
-        await connection.end();
 
         return res.status(200).json({
             success: true,
-            message: "Book updated succesfully",
-            id: bookResultsUpdate.insertId
+            message: "Book updated successfully",
+            updatedRows: bookResultsUpdate.affectedRows
         });
 
     } catch (error) {
-        console.log("Error updating book", error);
+        console.error("Error updating book", error);
         return res.status(500).json({
             status: "error",
             message: "Internal error. Contact support",
             error: error.message
         });
+
+    }
+    finally {
+        if (connection)
+            await connection.end();
     }
 
 });
@@ -132,18 +136,41 @@ app.put("/api/book/:id", async (req, res) => {
 
 //Eliminar una entrada existente:
 app.delete("/api/book/:id", async (req, res) => {
-    const connection = await getConnection();
-    const { id } = req.params;
-    const sqlQuery = "DELETE FROM books WHERE id = ?";
-    const [bookResultsDelete] = await connection.query(sqlQuery, [id]);
-    console.log(bookResultsDelete);
+    let connection;
+    try {
+        connection = await getConnection();
+        const { id } = req.params;
 
-    connection.end();
-    res.status(200).json({
-        status: "success",
-        message: "Remove resorce"
-    });
+        const [bookExists] = await connection.query("SELECT * FROM books WHERE id = ?", [id]);
+        if (bookExists.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "Book not found"
+            });
+        }
 
+        const sqlQuery = "DELETE FROM books WHERE id = ?";
+        const [bookResultsDelete] = await connection.query(sqlQuery, [id]);
+
+        await connection.end();
+
+        res.status(200).json({
+            status: "success",
+            message: "Book deleted successfully",
+            deletedRows: bookResultsDelete.affectedRows
+        });
+
+    } catch (error) {
+        console.error("Error deleting book", error);
+        return res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
+        });
+    } finally {
+        if (connection)
+            await connection.end();
+    }
 });
 
 
