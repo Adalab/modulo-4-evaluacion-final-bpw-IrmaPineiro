@@ -44,5 +44,8 @@ UPDATE books SET title = "PEQUEÑO SHERLOCK: EL CASO DEL TIRANOSAURIO REX" WHERE
 
 DELETE FROM books WHERE id = 6; 
 
+SELECT * FROM books WHERE id = 11
+        
+
 
 

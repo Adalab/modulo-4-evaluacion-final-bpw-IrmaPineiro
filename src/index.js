@@ -77,18 +77,55 @@ app.post("/api/book", async (req, res) => {
 
 //Actualizar una entrada existente:
 app.put("/api/book/:id", async (req, res) => {
-    const connection = await getConnection();
-    const { id } = req.params;
-    const { title, author, year, publisher, pages, genre } = req.body;
-    const sqlQuery = "UPDATE books SET title = ?, author = ?, year = ?, publisher = ?, pages = ?, genre = ? WHERE id = ?";
-    const [bookResultsUpdate] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre, id]);
-    console.log(bookResultsUpdate);
 
-    connection.end();
-    res.json({
-        success: true,
-        id: bookResultsUpdate.insertId
-    });
+    try {
+        const connection = await getConnection();
+        const { id } = req.params;
+        const { title, author, year, publisher, pages, genre } = req.body;
+
+        if (!id) {
+            return res.status(400).json({
+                status: "error",
+                message: "Book ID is required"
+            });
+        }
+
+        if (!title || !author || !year || !publisher || !pages || !genre) {
+            return res.status(400).json({
+                status: "error",
+                message: "Please fill all fields"
+            });
+
+        } else {
+            const [bookExists] = await connection.query("SELECT * FROM books WHERE id = ?", [id]);
+            if (bookExists.length === 0) {
+                return res.status(404).json({
+                    status: "error",
+                    message: "Book not found"
+                });
+            }
+        }
+
+        const sqlQuery = "UPDATE books SET title = ?, author = ?, year = ?, publisher = ?, pages = ?, genre = ? WHERE id = ?";
+        const [bookResultsUpdate] = await connection.query(sqlQuery, [title, author, year, publisher, pages, genre, id]);
+        console.log(bookResultsUpdate);
+
+        await connection.end();
+
+        return res.status(200).json({
+            success: true,
+            message: "Book updated succesfully",
+            id: bookResultsUpdate.insertId
+        });
+
+    } catch (error) {
+        console.log("Error updating book", error);
+        return res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
+        });
+    }
 
 });
 
