@@ -33,5 +33,14 @@ password VARCHAR(250) NOT NULL
 );
 SELECT * FROM books; 
 
+INSERT INTO books (title, author, year, publisher, pages, genre)
+VALUES 
+("Pequeño Sherlock", "Pascal Prévot", "2025", "Anaya Infantil y Juvenil", "48", "infantil");
+
+
+UPDATE books SET title = "DORAEMON Nº 01/15" WHERE id = 6;
+
+UPDATE books SET title = "PEQUEÑO SHERLOCK: EL CASO DEL TIRANOSAURIO REX" WHERE id = 4;
+
 
 
