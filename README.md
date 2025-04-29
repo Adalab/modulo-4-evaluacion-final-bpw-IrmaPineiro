@@ -1,5 +1,4 @@
-
- #Biblioteca API
+#Biblioteca API
 
 Esta API permite la gestión de libros en una biblioteca mediante operaciones de lectura, inserción, actualización y eliminación. También incluye autenticación de usuarios.
 
@@ -8,7 +7,6 @@ Esta API permite la gestión de libros en una biblioteca mediante operaciones de
 - **Repositorio en GitHub**: [Enlace al repositorio](https://github.com/Adalab/modulo-4-evaluacion-final-bpw-IrmaPineiro.git)
 - **Desplegado en Render.com**: [Enlace a la API](https://modulo-4-evaluacion-final-bpw-irmapineiro.onrender.com)
 
-
 ## 🛠 Instalación
 
 1. Clona el repositorio:
@@ -16,10 +14,12 @@ Esta API permite la gestión de libros en una biblioteca mediante operaciones de
    ```bash
    git clone https://github.com/turepositorio.git](https://github.com/Adalab/modulo-4-evaluacion-final-bpw-IrmaPineiro.git
 
-2. Instala las dependencias:
-      ```bash
-   npm install
+   ```
 
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
 
 3.Configura las variables de entorno en un archivo .env:
 
@@ -34,48 +34,47 @@ PORT=5000
 4.Inicia el servidor:
 npm start
 
-
-
 ## 📌 Endpoints
 
 📚 Books:
+
 1. Listar todos los libros GET /api/books
 2. Agregar un nuevo libro POST /api/book
    {
-  "title": "El Principito",
-  "author": "Antoine de Saint-Exupéry",
-  "year": 1943,
-  "publisher": "Editorial XYZ",
-  "pages": 96,
-  "genre": "Ficción"
-}
+   "title": "El Principito",
+   "author": "Antoine de Saint-Exupéry",
+   "year": 1943,
+   "publisher": "Editorial XYZ",
+   "pages": 96,
+   "genre": "Ficción"
+   }
 
-4. Actualizar un libro existente PUT /api/book/:id
-5. Eliminar un libro DELETE /api/book/:id
+3. Actualizar un libro existente PUT /api/book/:id
+4. Eliminar un libro DELETE /api/book/:id
 
+5. Para ver la pagina dinámica de un libro GET /api/book/:id
 
 👤 Users:
+
 1. Registrar usuario POST /api/register
    {
-  "userName": "Irma",
-  "email": "irma@example.com",
-  "password": "123456"
-}
+   "userName": "Irma",
+   "email": "irma@example.com",
+   "password": "123456"
+   }
 
-3. Iniciar sesión POST /api/login
+2. Iniciar sesión POST /api/login
    {
-  "email": "irma@example.com",
-  "password": "123456"
-}
-
-
+   "email": "irma@example.com",
+   "password": "123456"
+   }
 
 🔐 Autenticación:
 La autenticación se maneja con JWT. Al iniciar sesión, el usuario recibe un token que debe incluir en los headers de las solicitudes protegidas:
 Authorization: Bearer <TOKEN>
 
-
 ## 🛠 Tecnologías Utilizadas
+
 Node.js con Express.js
 
 MySQL como base de datos
@@ -85,13 +84,3 @@ JWT para autenticación
 Bcrypt para encriptación de contraseñas
 
 Postman para pruebas de endpoints
-
-
-
-
-
-
-
-
-
-   
