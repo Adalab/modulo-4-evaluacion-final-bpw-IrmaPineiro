@@ -27,6 +27,9 @@ DB_PASSWORD=tu_password
 MY_SECRET_TOKEN=secretToken
 PORT=5000
 
+4.Inicia el servidor:
+npm start
+
 
 
 ## 📌 Endpoints
