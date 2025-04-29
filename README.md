@@ -23,6 +23,10 @@ Esta API permite la gestión de libros en una biblioteca mediante operaciones de
 
 3.Configura las variables de entorno en un archivo .env:
 
+DB_HOST=tu_localhost
+DB_DATABASE=library_db
+DB_USER=tu_root
+DB_PORT=3306
 DB_PASSWORD=tu_password
 MY_SECRET_TOKEN=secretToken
 PORT=5000
