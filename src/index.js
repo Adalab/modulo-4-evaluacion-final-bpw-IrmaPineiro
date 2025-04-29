@@ -29,19 +29,37 @@ async function getConnection() {
 //Endpoints:
 //Leer/listar todas las entradas existentes:
 app.get("/api/books", async (req, res) => {
-    const connection = await getConnection();
-    const sqlQuery = "SELECT * FROM books";
-    const [bookResults] = await connection.query(sqlQuery);
-    //console.log(bookResults);
+    let connection;
+    try {
+        connection = await getConnection();
+        const sqlQuery = "SELECT * FROM books";
+        const [bookResults] = await connection.query(sqlQuery);
+        //console.log(bookResults);
 
-    connection.end();
+        await connection.end();
 
-    res.status(200).json({
-        info: {
-            count: bookResults.length
-        },
-        results: bookResults
-    });
+        res.status(200).json({
+            info: {
+                count: bookResults.length
+            },
+            results: bookResults
+        });
+
+
+    } catch (error) {
+        console.error("Error updating book", error);
+        return res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
+        });
+
+    }
+    finally {
+        if (connection)
+            await connection.end();
+    }
+
 
 });
 
@@ -300,6 +318,7 @@ app.post("/api/login", async (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
+    console.log(process.env)
 
 });
 
