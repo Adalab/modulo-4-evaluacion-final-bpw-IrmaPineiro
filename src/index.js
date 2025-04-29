@@ -10,7 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const MY_SECRET_TOKEN = "secretToken";
 
 
 // función para realizar conexión para conectarte con la base de datos MySQL:
@@ -271,7 +270,7 @@ app.post("/api/login", async (req, res) => {
 
                 }
                 const token = jwt.sign(infoToken, process.env.MY_SECRET_TOKEN, { expiresIn: "1h" });
-                //console.log(token);
+
 
                 res.status(200).json({
                     success: true,
@@ -318,7 +317,8 @@ app.post("/api/login", async (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
-    console.log(process.env)
+
+
 
 });
 
