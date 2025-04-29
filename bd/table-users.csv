@@ -1,0 +1,7 @@
+id,userName,email,password
+1,susana,susana@gmail.com,1234
+2,pedro,pedro@gmail.com,$2b$10$xW9RgGkQgfyPKP9qNLmYq.rEpe8Ztq74bNFdx2CqRTEKhSknxuSFm
+3,alberto,alberto@gmail.com,$2b$10$B92Pk5xPEx.tBOLCO6N9v.8zC64Nq5m0wru683YrhHZvjFf5XLoWO
+4,lucia,lucia@gmail.com,$2b$10$8ykQoodZ6nYzVOw3pQOFQ.45K0yll7bBblalXxld0to180suEDx2q
+6,marisa,marisa@gmail.com,$2b$10$I/1.OnWOOkQglCZlI.wKzeHmWi29mp7.PNacRPmLC89Ucs0GMGy7y
+8,rocio,rocio@gmail.com,$2b$10$KNyDsg2XBHqNSSMCkgpYrO2b79riItWQovFCcT1KZ1EZQhNMhhjFK

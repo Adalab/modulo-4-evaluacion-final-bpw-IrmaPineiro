@@ -1,0 +1,10 @@
+id,title,author,year,publisher,pages,genre
+1,"El misterioso caso de Styles","Agatha Christie",2022,Booket,224,"Novela negra"
+2,"El Espía","Jorge Díaz",2025,"Editorial Planeta",432,"Thriller histórico"
+3,"Escuela de Monstruos","Sally Rippin",2025,Montena,48,Infantil
+4,"PEQUEÑO SHERLOCK: EL CASO DEL TIRANOSAURIO REX","Pascal Prévot",2025,"Anaya Infantil y Juvenil",48,infantil
+5,"Iris y Luna","Aurora Quirón",2025,"B de Blok",128,infantil
+7,DORAEMON,"Fujiko F. Fujio",2025,"Planeta Cómic",568,"comic infantil"
+8,"DORAEMON: NOBITA Y LOS HEROES DEL ESPACIO","Fujiko F. Fujio",2025,"Planeta Cómic",568,comic
+12,"DORAEMON Y EL PEQUEÑO DINOSAURIO","Fujiko F. Fujio",2025,"Planeta Cómic",500,comic
+14,"DORAEMON Y EL DINOSAURIO","Fujiko F. Fujio",2025,2025,500,comic

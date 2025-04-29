@@ -16,10 +16,11 @@ const MY_SECRET_TOKEN = "secretToken";
 // función para realizar conexión para conectarte con la base de datos MySQL:
 async function getConnection() {
     const connection = await mysql.createConnection({
-        host: 'localhost',
-        database: 'library_db',
-        user: 'root',
-        password: process.env.DB_PASSWORD,
+        host: process.env.DB_HOST,
+        database: process.env.DB_DATABASE,
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD
     });
     await connection.connect();
     return connection;
