@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 app.set("view engine", "ejs");
-
+app.use(express.static("src/public"));
 
 
 // función para realizar conexión con la base de datos MySQL:
@@ -312,17 +312,40 @@ app.post("/api/login", async (req, res) => {
 
 //Devolver a frontend una pagina dinamica:
 app.get("/api/book/:id", async (req, res) => {
-    const connection = await getConnection();
-    const { id } = req.params;
-    console.log(id);
+    let connection;
+    try {
+        connection = await getConnection();
+        const { id } = req.params;
+        console.log(id);
 
-    const sqlQuery = "SELECT * FROM books WHERE id = ?";
-    const [bookResults] = await connection.query(sqlQuery, [id]);
-    console.log(bookResults);
+        const sqlQuery = "SELECT * FROM books WHERE id = ?";
+        const [bookResults] = await connection.query(sqlQuery, [id]);
+        console.log(bookResults);
 
-    connection.end();
+        if (bookResults.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "Book not found"
+            });
+        }
 
-    res.render("detailBook", { book: bookResults[0] });
+        res.render("detailBook", { book: bookResults[0] });
+
+
+    } catch (error) {
+        console.error("Error al obtener el libro:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal error. Contact support",
+            error: error.message
+        });
+    } finally {
+        if (connection)
+            await connection.end();
+    }
+
+
+
 });
 
 
