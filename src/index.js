@@ -10,9 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.set("view engine", "ejs");
 
 
-// función para realizar conexión para conectarte con la base de datos MySQL:
+
+// función para realizar conexión con la base de datos MySQL:
 async function getConnection() {
     const connection = await mysql.createConnection({
         host: process.env.DB_HOST,
@@ -308,7 +310,20 @@ app.post("/api/login", async (req, res) => {
 
 });
 
+//Devolver a frontend una pagina dinamica:
+app.get("/api/book/:id", async (req, res) => {
+    const connection = await getConnection();
+    const { id } = req.params;
+    console.log(id);
 
+    const sqlQuery = "SELECT * FROM books WHERE id = ?";
+    const [bookResults] = await connection.query(sqlQuery, [id]);
+    console.log(bookResults);
+
+    connection.end();
+
+    res.render("detailBook", { book: bookResults[0] });
+});
 
 
 
@@ -318,7 +333,8 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running http://localhost:${port}`);
 
-
-
 });
 
+app.get("/", (req, res) => {
+    res.send("Servidor funcionando correctamente en Render.");
+});
